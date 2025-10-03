@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>マジン式プロンプト完全解説</title>
+  
+  <!-- Mermaid.js の読み込み -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'base',
+        securityLevel: 'loose',
+        fontFamily: '"Noto Sans JP", sans-serif',
+        themeVariables: {
+          primaryColor: '#4CAF50',
+          primaryTextColor: '#fff',
+          primaryBorderColor: '#9575CD',
+          lineColor: '#009688',
+          secondaryColor: '#FFC107',
+          tertiaryColor: '#E91E63',
+          background: '#FAFAFA'
+        },
+        flowchart: {
+          cornerRadius: 15,
+          curve: 'cardinal',
+          htmlLabels: true
+        }
+      });
+    });
+  </script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      line-height: 1.8;
+      background: linear-gradient(135deg, #FAFAFA 0%, #f0f0f0 100%);
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    /* ヘッダースタイル */
+    .header {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: linear-gradient(135deg, #4CAF50 0%, #009688 100%);
+      color: #fff;
+      border-radius: 20px;
+      margin-bottom: 3rem;
+      box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .header .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.95;
+    }
+    
+    /* セクションスタイル */
+    .section {
+      background: #fff;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease;
+    }
+    
+    .section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 3px solid #4CAF50;
+    }
+    
+    .section-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #4CAF50 0%, #009688 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      font-size: 1.5rem;
+      color: #fff;
+    }
+    
+    h2 {
+      color: #333;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    
+    h3 {
+      color: #4CAF50;
+      font-size: 1.3rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    h3::before {
+      content: '▶';
+      color: #FFC107;
+      margin-right: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    /* カード系スタイル */
+    .highlight-box {
+      background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+      color: #333;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin: 1.5rem 0;
+      border-left: 5px solid #E91E63;
+    }
+    
+    .process-card {
+      background: #f8f8f8;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      border-radius: 10px;
+      border-left: 4px solid #9575CD;
+      transition: all 0.3s ease;
+    }
+    
+    .process-card:hover {
+      background: #f0f0f0;
+      transform: translateX(10px);
+    }
+    
+    .step-number {
+      display: inline-block;
+      width: 35px;
+      height: 35px;
+      background: #E91E63;
+      color: #fff;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 35px;
+      margin-right: 0.8rem;
+      font-weight: bold;
+    }
+    
+    /* リストスタイル */
+    .feature-list {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .feature-list li {
+      padding: 0.8rem 0;
+      padding-left: 2rem;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    
+    .feature-list li:hover {
+      transform: translateX(5px);
+    }
+    
+    .feature-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #4CAF50;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    
+    /* Mermaid図の調整 */
+    .mermaid {
+      margin: 2rem auto;
+      text-align: center;
+    }
+    
+    /* タイムラインスタイル */
+    .timeline {
+      position: relative;
+      padding: 2rem 0;
+      margin: 2rem 0;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50px;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: linear-gradient(180deg, #4CAF50 0%, #009688 100%);
+    }
+    
+    .timeline-item {
+      position: relative;
+      padding: 1rem 0 2rem 80px;
+    }
+    
+    .timeline-marker {
+      position: absolute;
+      left: 39px;
+      top: 20px;
+      width: 25px;
+      height: 25px;
+      background: #fff;
+      border: 4px solid #9575CD;
+      border-radius: 50%;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      background: #9575CD;
+      color: #fff;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      margin-right: 0.5rem;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .section {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- ヘッダー -->
+    <div class="header">
+      <h1>🔮 マジン式プロンプト</h1>
+      <p class="subtitle">〜マジンさんが編み出した、AI初心者でも簡単にGoogleスライドを自動生成する魔法〜</p>
+    </div>
+
+    <!-- 講師紹介セクション -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">👤</div>
+        <h2>講師「マジン」プロフィール</h2>
+      </div>
+      
+      <h3>マジンさんとは何者か</h3>
+      <div class="highlight-box">
+        <strong>結論：</strong>美術系出身から独学でAI推進担当になった異色のサラリーマン「マジン」<br>
+        <strong>背景：</strong>幼少期のニックネーム「魔人ブー」が省略されて「マジン」に（ブーの方に魔人ブーらしさがあるのに...）<br>
+        <strong>具体例：</strong>8/16投稿のNote記事が8,600いいね獲得、フォロワー50人→7,000人以上に急増でマジン旋風<br>
+        <strong>例え話：</strong>郵便配達員→恋愛で上京→コピー取り→IT担当→AI推進担当という「マジンの大冒険」<br>
+        <strong>結論：</strong>マジンが証明！AIは誰にでもチャンスを与えてくれる夢のあるツール
+      </div>
+
+      <h3>マジンの軌跡</h3>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <strong>鹿児島時代（マジン前史）</strong><br>
+          画家を目指して美術系学校卒業 → 郵便配達員として勤務
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <strong>運命の上京</strong><br>
+          SNSで出会った恋人と2年の遠距離恋愛後に上京 → 総務部配属（コピー取りマジン）
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <strong>ITマジンへの進化</strong><br>
+          植木の水やり → PC管理・ネットワーク構築担当に成長
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <strong>2023年〜現在（AIマジン覚醒）</strong><br>
+          ChatGPT登場で人生激変 → AI推進担当 → Googleハッカソン準優勝 → マジン式プロンプト開発
+        </div>
+      </div>
+    </div>
+
+    <!-- 開発背景セクション -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">💡</div>
+        <h2>マジン式プロンプト誕生ストーリー</h2>
+      </div>
+      
+      <h3>マジン式プロンプト開発秘話</h3>
+      <div class="highlight-box">
+        <strong>結論：</strong>社員の「スライド作りを効率化したい」声にマジンが立ち上がった<br>
+        <strong>背景：</strong>マジン「社内アンケートでスライド作成効率化が最多要望だった」<br>
+        <strong>具体例：</strong>マジン「Gammaとか使いたいけど、上司に『中華製ツール使わせて』って言ったら一蹴された」<br>
+        <strong>例え話：</strong>上司「そんな中華製ツールを業務で使わせるわけないじゃん」→ マジン「じゃあ自分で作るしかない！」<br>
+        <strong>結論：</strong>マジンの使命：Googleワークスペース内だけで魔法を起こす
+      </div>
+
+      <h3>マジンの試行錯誤ストーリー</h3>
+      <div class="mermaid">
+        graph LR
+          A[マジン開発開始] --> B[試行1: Marp風ツール]
+          B --> C{結果: ❌マジン挫折1}
+          C --> D[試行2: HTML→スライド]
+          D --> E{結果: ❌マジン挫折2}
+          E --> F[発見: Gemini「GASで作れるぜ」]
+          F --> G[試行3: マジン×GAS]
+          G --> H{結果: ✅マジン成功！}
+          H --> I[完成: マジン式19パターン]
+          
+          style A fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+          style I fill:#E91E63,stroke:#333,stroke-width:2px,color:#fff
+          style C fill:#FFC107,stroke:#333,stroke-width:2px
+          style E fill:#FFC107,stroke:#333,stroke-width:2px
+          style H fill:#9575CD,stroke:#333,stroke-width:2px,color:#fff
+      </div>
+
+      <div class="process-card">
+        <span class="step-number">1</span>
+        <strong>マークダウン方式（マジン2ヶ月の苦闘）</strong><br>
+        マジン「画像も入れられない、レイアウトも制限...社員に見せたら総スカンだった」
+      </div>
+      
+      <div class="process-card">
+        <span class="step-number">2</span>
+        <strong>HTML変換方式（マジンの希望と絶望）</strong><br>
+        マジン「リッチな見た目はできた！でも画像になっちゃって編集できない...また没」
+      </div>
+      
+      <div class="process-card">
+        <span class="step-number">3</span>
+        <strong>GAS直接生成方式（マジンの覚醒）</strong><br>
+        マジン「エラー祭りを乗り越え、小さな修正の積み重ねでついに成功！これがマジン式だ！」
+      </div>
+    </div>
+
+    <!-- 設計思想セクション -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">⚙️</div>
+        <h2>マジン式プロンプトの魔法の設計</h2>
+      </div>
+      
+      <h3>マジン流・基本コンセプト</h3>
+      <div class="highlight-box">
+        <strong>結論：</strong>マジン「Gemini、お前洗濯機になれ！」という斬新なアプローチ<br>
+        <strong>背景：</strong>マジン「ペアプログラミングじゃない、完全自動化だ」<br>
+        <strong>具体例：</strong>洗濯機のように「スタートボタン」ポチで全工程を自動実行<br>
+        <strong>例え話：</strong>マジン「給水→洗い→すすぎ→脱水→乾燥、この決まった手順を例外なく実行させる」<br>
+        <strong>結論：</strong>マジン式＝AIをガチガチに縛り付けて、確実に同じ結果を出力させる魔法
+      </div>
+
+      <h3>マジン式6ステップの魔法</h3>
+      <div class="mermaid">
+        graph TD
+          A[入力テキスト] --> B[STEP1: マジン分解術]
+          B --> C[STEP2: マジン選択術]
+          C --> D[STEP3: マジン配置術]
+          D --> E[STEP4: マジン生成術]
+          E --> F[STEP5: マジン検証術]
+          F --> G[STEP6: マジン出力術]
+          G --> H[完成: マジンスライド！]
+          
+          B --> B1[章・節・要点を抽出]
+          C --> C1[19種類から最適選択]
+          D --> D1[情報の配置決定]
+          E --> E1[決められた型に流し込み]
+          F --> F1[マジン「ミスすんなよ」]
+          G --> G1[コードブロック出力]
+          
+          style A fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+          style H fill:#E91E63,stroke:#333,stroke-width:2px,color:#fff
+          style B fill:#9575CD,stroke:#333,stroke-width:2px,color:#fff
+          style C fill:#9575CD,stroke:#333,stroke-width:2px,color:#fff
+          style D fill:#9575CD,stroke:#333,stroke-width:2px,color:#fff
+          style E fill:#9575CD,stroke:#333,stroke-width:2px,color:#fff
+          style F fill:#9575CD,stroke:#333,stroke-width:2px,color:#fff
+          style G fill:#9575CD,stroke:#333,stroke-width:2px,color:#fff
+      </div>
+
+      <ul class="feature-list">
+        <li><badge class="badge">STEP 1</badge>マジン分解術：文章の構造を理解し、全体像を把握</li>
+        <li><badge class="badge">STEP 2</badge>マジン選択術：19種類のテンプレートから最適なものを選択</li>
+        <li><badge class="badge">STEP 3</badge>マジン配置術：選ばれたスライドのどこに何を配置するか決定</li>
+        <li><badge class="badge">STEP 4</badge>マジン生成術：事前定義された型に情報を流し込む（AIに自由なし）</li>
+        <li><badge class="badge">STEP 5</badge>マジン検証術：「ミスすんなよ」というマジンのプレッシャー付きセルフチェック</li>
+        <li><badge class="badge">STEP 6</badge>マジン出力術：余計な発言なしでコードのみ出力</li>
+      </ul>
+    </div>
+
+    <!-- 特徴と成果セクション -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">🏆</div>
+        <h2>成果と今後の展望</h2>
+      </div>
+      
+      <h3>主な成果</h3>
+      <ul class="feature-list">
+        <li>初版13種類から改良版19種類のスライドパターンに拡充</li>
+        <li>エラー時のスキップ処理追加で安定性が大幅向上</li>
+        <li>会社のスライドテンプレートを完全再現</li>
+        <li>Note記事8,600いいね獲得という予想外のバズ</li>
+        <li>Googleハッカソン準優勝の実績</li>
+      </ul>
+
+      <h3>マジンからのメッセージ</h3>
+      <div class="highlight-box">
+        <strong>結論：</strong>マジン「AIを学ぶのは今からでも全然遅くない！」<br>
+        <strong>背景：</strong>マジン「私、文系ですらない美術系出身だよ？それでもAIセミナー講師になれた」<br>
+        <strong>具体例：</strong>マジン「リアルで本当に役立つ範囲に絞れば、今からでも十分間に合う」<br>
+        <strong>例え話：</strong>マジン「全部マスターする必要なんてない。自分の武器となる範囲を極めればいいんだ」<br>
+        <strong>結論：</strong>マジン「Googleワークスペース×AIという限定領域でも、マジンのような価値を生み出せる！」
+      </div>
+    </div>
+
+    <!-- 実装方法の概要 -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">📝</div>
+        <h2>マジン式実装のポイント</h2>
+      </div>
+      
+      <h3>マジン式成功の秘訣</h3>
+      <div class="mermaid">
+        graph LR
+          A[マジン式成功の秘訣] --> B[小さな修正の積み重ね]
+          A --> C[動作確認済みコードベース]
+          A --> D[エラー処理の追加]
+          A --> E[マジンの圧]
+          
+          B --> B1[マジン「一度に大きく変更しない」]
+          C --> C1[マジン「確実に動くコードから派生」]
+          D --> D1[マジン「エラー時はスキップ処理」]
+          E --> E1[マジン「ミスすんなよのプレッシャー」]
+          
+          style A fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+          style B fill:#FFC107,stroke:#333,stroke-width:2px
+          style C fill:#FFC107,stroke:#333,stroke-width:2px
+          style D fill:#FFC107,stroke:#333,stroke-width:2px
+          style E fill:#FFC107,stroke:#333,stroke-width:2px
+      </div>
+
+      <ul class="feature-list">
+        <li>マジン「一度成功したコードを基準に小さく改良を重ねるんだ」</li>
+        <li>マジン「手動でのコード調整も積極的に活用しよう」</li>
+        <li>マジン「AIエージェントじゃなくても自己検証指示は効果あり！」</li>
+        <li>マジン「エラー処理による堅牢性の確保が大事」</li>
+        <li>マジン「会社のテンプレートを完全に再現する執念が成功への道」</li>
+      </ul>
+    </div>
+
+    <!-- カスタマイズセクション -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">🎨</div>
+        <h2>マジン式カスタマイズ術</h2>
+      </div>
+      
+      <h3>マジンの魔法のカスタマイズ手順</h3>
+      <div class="mermaid">
+        graph TD
+          A[基本設定] --> B[フォント変更]
+          A --> C[カラー変更]
+          A --> D[ロゴ変更]
+          A --> E[フッターテキスト変更]
+          
+          B --> B1[数字の4でメイリオに変更]
+          C --> C1[企業カラーコードを入力]
+          D --> D1[画像URLをコピー&ペースト]
+          E --> E1[マジンコーポレーションに変更]
+          
+          style A fill:#9575CD,stroke:#333,stroke-width:2px,color:#fff
+          style B fill:#FFC107,stroke:#333,stroke-width:2px
+          style C fill:#FFC107,stroke:#333,stroke-width:2px
+          style D fill:#FFC107,stroke:#333,stroke-width:2px
+          style E fill:#FFC107,stroke:#333,stroke-width:2px
+      </div>
+      
+      <div class="process-card">
+        <span class="step-number">1</span>
+        <strong>フォント設定（マジン推奨）</strong><br>
+        マジン「数字の4を入れるとメイリオに変わる！他にも1〜10まで選べるよ」
+      </div>
+      
+      <div class="process-card">
+        <span class="step-number">2</span>
+        <strong>ロゴ画像の設定方法</strong><br>
+        マジン「Google検索でヒットする画像じゃないとダメ。画像を右クリック→『画像アドレスをコピー』が重要！」
+      </div>
+      
+      <div class="process-card">
+        <span class="step-number">3</span>
+        <strong>テンプレート化のマジンテクニック</strong><br>
+        マジン「設定済みスライドをコピーして使い回す。新しいコードを入れる時は元のテンプレートでGASを更新」
+      </div>
+
+      <h3>初期値変更のマジン秘伝</h3>
+      <div class="highlight-box">
+        <strong>結論：</strong>マジン「9万文字のプロンプトから初期値を見つけて変更する裏技」<br>
+        <strong>背景：</strong>毎回カスタマイズするのは面倒→最初から自社仕様にしたい<br>
+        <strong>具体例：</strong>fonts.family: "Arial" → "Noto Sans JP"、colors.primary: "#4285F4" → 企業カラーコード<br>
+        <strong>例え話：</strong>マジン「宝探しみたいに9万文字から該当箇所を探すんだ」<br>
+        <strong>結論：</strong>一度設定すれば、以降は自社仕様のスライドが自動生成される
+      </div>
+    </div>
+
+    <!-- 高度なカスタマイズセクション -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">✨</div>
+        <h2>マジンの上級カスタマイズ術</h2>
+      </div>
+      
+      <h3>Geminiを使った画像生成テクニック</h3>
+      <div class="process-card">
+        <span class="step-number">1</span>
+        <strong>サイドパネルからGemini召喚</strong><br>
+        マジン「『このスライドにマッチしたアイコン素材集を作りたい』と頼めば、スライド内容を理解して画像を生成してくれる」
+      </div>
+      
+      <div class="process-card">
+        <span class="step-number">2</span>
+        <strong>背景の魔法的変更</strong><br>
+        マジン「スライド→背景を変更で、色やグラデーション、画像まで設定可能。テーマに追加で全スライドに反映！」
+      </div>
+      
+      <h3>マジンの必殺技：GIFアニメーション背景</h3>
+      <div class="highlight-box">
+        <strong>結論：</strong>マジン「動く背景で期待値爆上げ！葉っぱがゆらゆら動くだけでプロ感満載」<br>
+        <strong>背景：</strong>静止画だけじゃつまらない→GIFアニメーションで差をつける<br>
+        <strong>具体例：</strong>Canvaでテンプレート取得→Geminiで動画生成→GIF変換→スライドに挿入<br>
+        <strong>例え話：</strong>マジン「これを見た瞬間、めちゃくちゃいいプレゼンが始まる予感しかしない」<br>
+        <strong>注意：</strong>50MB以内制限、スライド全体で100MB以内の制約あり
+      </div>
+
+      <div class="mermaid">
+        graph LR
+          A[Canvaでテンプレート] --> B[Geminiで動画生成]
+          B --> C[動画→GIF変換]
+          C --> D[スライドに背景設定]
+          D --> E[プロ級スライド完成！]
+          
+          style A fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+          style E fill:#E91E63,stroke:#333,stroke-width:2px,color:#fff
+      </div>
+
+      <ul class="feature-list">
+        <li>マジン「Canvaで『zoom』検索すると良い背景素材が見つかる」</li>
+        <li>マジン「Geminiに『16:9の壁紙を作りたい、ちょっとだけアニメーション加えて』と指示」</li>
+        <li>マジン「ネットで『動画 GIF変換』で検索してツールを使う」</li>
+        <li>マジン「セクションスライドだけ違う背景にするとメリハリが出る」</li>
+        <li>マジン「Google Vidsとの連携でナレーション付きAI動画も作れる（予告）」</li>
+      </ul>
+
+      <h3>マジンのプロンプト初期値変更箇所</h3>
+      <div class="process-card">
+        <strong>📍 fonts.family</strong>: "Arial" → お好きなフォント名<br>
+        <strong>🎨 colors.primary</strong>: "#4285F4" → 企業のカラーコード<br>
+        <strong>🖼️ logos.header/closing</strong>: GoogleロゴURL → 企業ロゴURL<br>
+        <strong>📝 footerText</strong>: "Google Inc" → "マジンコーポレーション"<br>
+        <strong>💡 ヒント</strong>: マジン「$から始まる暗号は日付取得関数。残してもOK、消してもOK」
+      </div>
+    </div>
+  </div>
+</body>
+</html>

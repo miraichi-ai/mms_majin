@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マジン式プロンプト図解</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #FAFAFA 0%, #E8F5E9 100%);
+            padding: 20px;
+            line-height: 1.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #4CAF50 0%, #009688 100%);
+            color: #333;
+            padding: 60px 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 30px rgba(76, 175, 80, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        h1 {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #FAFAFA 0%, #FFC107 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.4em;
+            color: #FAFAFA;
+            opacity: 0.95;
+        }
+        
+        .section {
+            background: #FAFAFA;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+        }
+        
+        h2 {
+            color: #4CAF50;
+            font-size: 2em;
+            margin-bottom: 25px;
+            padding-left: 20px;
+            border-left: 5px solid #FFC107;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4CAF50 0%, #009688 100%);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #FAFAFA;
+            font-size: 1.5em;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #FAFAFA 0%, #F3F4F6 100%);
+            border: 2px solid #4CAF50;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            border-color: #FFC107;
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.15);
+        }
+        
+        .feature-title {
+            color: #009688;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-number {
+            background: #E91E63;
+            color: #FAFAFA;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .highlight {
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            color: #333;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .process-flow {
+            background: #F5F5F5;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 35px;
+            top: 50px;
+            bottom: -30px;
+            width: 2px;
+            background: #9575CD;
+        }
+        
+        .timeline-item:last-child::before {
+            display: none;
+        }
+        
+        .timeline-dot {
+            width: 40px;
+            height: 40px;
+            background: #9575CD;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FAFAFA;
+            font-weight: bold;
+            margin-right: 20px;
+            z-index: 1;
+        }
+        
+        .timeline-content {
+            flex: 1;
+            background: #FAFAFA;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .mermaid-container {
+            background: #FAFAFA;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .result-box {
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+            border: 2px dashed #4CAF50;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .result-title {
+            color: #009688;
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .tips-box {
+            background: linear-gradient(135deg, #FFF9C4 0%, #FFE082 100%);
+            border-left: 5px solid #FFC107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .tips-title {
+            color: #F57C00;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        ul {
+            margin-left: 30px;
+            color: #555;
+        }
+        
+        li {
+            margin-bottom: 10px;
+            list-style-type: none;
+            position: relative;
+        }
+        
+        li::before {
+            content: '✨';
+            position: absolute;
+            left: -25px;
+        }
+        
+        .workflow-step {
+            background: linear-gradient(135deg, #E1F5FE 0%, #B3E5FC 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #009688;
+        }
+        
+        .workflow-step h3 {
+            color: #009688;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>🚀 マジン式プロンプト</h1>
+            <p class="subtitle">AI × Google Workspace で実現する次世代スライド作成術</p>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">📖</span>概要と背景</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-title">
+                        <span class="step-number">1</span>
+                        開発のきっかけ
+                    </div>
+                    <p><strong>課題：</strong>社員から「スライド作りを効率化したい」という要望多数</p>
+                    <p><strong>制約：</strong>セキュリティ上、外部AIツールは使用不可</p>
+                    <p><strong>解決策：</strong>Google Workspace内のGeminiとGASで実現</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-title">
+                        <span class="step-number">2</span>
+                        開発者プロフィール
+                    </div>
+                    <p><strong>背景：</strong>美術系出身 → 郵便配達員 → IT推進担当</p>
+                    <p><strong>転機：</strong>ChatGPT登場で人生が大きく変化</p>
+                    <p><strong>実績：</strong>Googleハッカソン準優勝、Note 8600+ いいね</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-title">
+                        <span class="step-number">3</span>
+                        マジン式の特徴
+                    </div>
+                    <p><strong>コンセプト：</strong>「洗濯機のように自動化」</p>
+                    <p><strong>仕組み：</strong>19種類のテンプレートから最適なものを選択</p>
+                    <p><strong>成果：</strong>約半年かけて完成した自動化システム</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">⚙️</span>開発の試行錯誤プロセス</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot">1</div>
+                    <div class="timeline-content">
+                        <strong>Marp風ツール開発（失敗）</strong>
+                        <p>Markdownでスライド作成 → 画像挿入不可、レイアウト制限で断念</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot">2</div>
+                    <div class="timeline-content">
+                        <strong>HTML→Googleスライド変換（失敗）</strong>
+                        <p>HTMLで作成 → 画像として貼り付けられるだけで編集不可</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot">3</div>
+                    <div class="timeline-content">
+                        <strong>GASで直接生成（成功！）</strong>
+                        <p>Geminiから「GASで直接Googleスライドを作れる」と教わり実現</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tips-box">
+                <p class="tips-title">💡 成功の秘訣</p>
+                <ul>
+                    <li>一度成功したコードをベースに小さく修正</li>
+                    <li>エラーと戦いながら徐々にパターンを増やす</li>
+                    <li>最終的に19種類のスライドパターンを収録</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🔄</span>処理フロー（6ステップ）</h2>
+            
+            <div class="mermaid-container">
+                <div class="mermaid">
+                    flowchart TD
+                        Start([📝 テキスト入力]) --> Step1[📊 STEP 1: コンテンツ分解<br/>章・節・要点の抽出]
+                        Step1 --> Step2[🎨 STEP 2: スライド構成選択<br/>19種類から最適なものを選定]
+                        Step2 --> Step3[📍 STEP 3: 情報配置<br/>どの情報をどこに置くか決定]
+                        Step3 --> Step4[⚡ STEP 4: スライド生成<br/>決められた型に情報を流し込む]
+                        Step4 --> Step5[✅ STEP 5: 自己検証<br/>エラーチェックと修正]
+                        Step5 --> Step6[📤 STEP 6: コード出力<br/>GASコードとして出力]
+                        Step6 --> End([✨ Googleスライド完成])
+                        
+                        style Start fill:#4CAF50,stroke:#009688,color:#fff
+                        style End fill:#FFC107,stroke:#F57C00,color:#333
+                        style Step1 fill:#E8F5E9,stroke:#4CAF50
+                        style Step2 fill:#E3F2FD,stroke:#2196F3
+                        style Step3 fill:#FCE4EC,stroke:#E91E63
+                        style Step4 fill:#F3E5F5,stroke:#9575CD
+                        style Step5 fill:#FFF9C4,stroke:#FFC107
+                        style Step6 fill:#E0F2F1,stroke:#009688
+                </div>
+            </div>
+            
+            <div class="workflow-step">
+                <h3>🎯 ポイント：完全自動化の実現</h3>
+                <p>AIとの対話ではなく、<span class="highlight">決まった手順を確実に実行</span>する設計</p>
+                <p>ユーザーはテキストを入力するだけで、一貫した品質のスライドが生成される</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🎨</span>カスタマイズ機能</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-title">デザイン設定</div>
+                    <ul>
+                        <li>フォント変更（Arial, Noto Sans JP等）</li>
+                        <li>テーマカラー設定（カラーコード指定）</li>
+                        <li>企業ロゴの挿入（画像URL使用）</li>
+                        <li>フッターテキストのカスタマイズ</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-title">高度な装飾</div>
+                    <ul>
+                        <li>背景画像の挿入</li>
+                        <li>GIFアニメーション背景対応</li>
+                        <li>Geminiによるアイコン自動生成</li>
+                        <li>グラデーション背景設定</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-title">テンプレート管理</div>
+                    <ul>
+                        <li>カスタム設定をテンプレート化</li>
+                        <li>初期値の変更（プロンプト編集）</li>
+                        <li>企業専用テンプレート作成</li>
+                        <li>複数テンプレートの管理</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">💡</span>活用のヒント</h2>
+            
+            <div class="mermaid-container">
+                <div class="mermaid">
+                    graph LR
+                        A[📄 議事録・文書] --> B[🤖 マジン式プロンプト]
+                        B --> C[💻 GASコード生成]
+                        C --> D[📊 Googleスライド]
+                        D --> E[🎥 AI動画作成]
+                        D --> F[🎨 デザインカスタマイズ]
+                        
+                        style A fill:#E8F5E9,stroke:#4CAF50
+                        style B fill:#F3E5F5,stroke:#9575CD
+                        style C fill:#E3F2FD,stroke:#2196F3
+                        style D fill:#FFF9C4,stroke:#FFC107
+                        style E fill:#FCE4EC,stroke:#E91E63
+                        style F fill:#E0F2F1,stroke:#009688
+                </div>
+            </div>
+            
+            <div class="tips-box">
+                <p class="tips-title">🚀 さらなる展開</p>
+                <ul>
+                    <li>Google Vizでナレーション付き動画作成</li>
+                    <li>Canvaテンプレートとの連携</li>
+                    <li>GIF変換ツールでアニメーション背景作成</li>
+                    <li>NotebookLMとの組み合わせで高度な分析</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="result-box">
+            <div class="result-title">🎯 マジン式プロンプトがもたらす価値</div>
+            <p><strong>時間削減：</strong>スライド作成時間を大幅短縮</p>
+            <p><strong>品質向上：</strong>一貫性のあるプロフェッショナルなデザイン</p>
+            <p><strong>セキュリティ：</strong>企業内で完結する安全な環境</p>
+            <p><strong>拡張性：</strong>カスタマイズによる無限の可能性</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'base',
+                securityLevel: 'loose',
+                fontFamily: 'Noto Sans JP, sans-serif',
+                themeVariables: {
+                    primaryColor: '#4CAF50',
+                    primaryTextColor: '#333',
+                    primaryBorderColor: '#009688',
+                    lineColor: '#9575CD',
+                    secondaryColor: '#FFC107',
+                    tertiaryColor: '#E91E63',
+                    background: '#FAFAFA',
+                    mainBkg: '#E8F5E9',
+                    secondBkg: '#FFF9C4',
+                    tertiaryBkg: '#E1F5FE'
+                },
+                flowchart: {
+                    cornerRadius: 15,
+                    curve: 'cardinal',
+                    htmlLabels: true,
+                    nodeSpacing: 50,
+                    rankSpacing: 80,
+                    padding: 20
+                }
+            });
+        });
+        
+        // スクロールアニメーション
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'all 0.6s ease';
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
